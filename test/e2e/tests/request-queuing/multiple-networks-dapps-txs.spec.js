@@ -98,9 +98,8 @@ describe('Request Queuing for Multiple Dapps and Txs on different networks.', fu
         await driver.switchToWindow(dappTwo);
         await driver.clickElement('#sendButton');
 
-        // First switch network confirmation
+        // First switch network
         await driver.switchToWindowWithTitle(WINDOW_TITLES.Dialog);
-        await driver.clickElement({ text: 'Switch network', tag: 'button' });
 
         // Wait for confirm tx after switch network confirmation.
         await driver.delay(regularDelayMs);
@@ -128,22 +127,10 @@ describe('Request Queuing for Multiple Dapps and Txs on different networks.', fu
         // TODO: Reload fix to have the confirmations show
         await driver.executeScript(`window.location.reload()`);
 
-        // Second Switch Network Confirmation
+        // Second Switch Network
         await driver.switchToWindowWithTitle(
           WINDOW_TITLES.ExtensionInFullScreenView,
         );
-        await driver.findElement({
-          css: '[data-testid="network-switch-from-network"]',
-          text: 'Localhost 8545',
-        });
-
-        await driver.findElement({
-          css: '[data-testid="network-switch-to-network"]',
-          text: 'Localhost 8546',
-        });
-
-        // Switch Network
-        await driver.clickElement({ text: 'Switch network', tag: 'button' });
 
         // Check for unconfirmed transaction in tx list
         await driver.wait(async () => {
