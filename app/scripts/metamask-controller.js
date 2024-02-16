@@ -468,15 +468,8 @@ export default class MetamaskController extends EventEmitter {
       trackMetaMetricsEvent: (...args) =>
         this.metaMetricsController.trackEvent(...args),
     });
-    this.networkController.initializeProvider();
-    this.provider =
-      this.networkController.getProviderAndBlockTracker().provider;
-    this.blockTracker =
-      this.networkController.getProviderAndBlockTracker().blockTracker;
 
-    // TODO: Delete when ready to remove `networkVersion` from provider object
-    this.deprecatedNetworkId = null;
-    this.updateDeprecatedNetworkId();
+
     networkControllerMessenger.subscribe(
       'NetworkController:networkDidChange',
       () => this.updateDeprecatedNetworkId(),
@@ -1336,6 +1329,7 @@ export default class MetamaskController extends EventEmitter {
         const { completedOnboarding: prevCompletedOnboarding } = prevState;
         const { completedOnboarding: currCompletedOnboarding } = currState;
         if (!prevCompletedOnboarding && currCompletedOnboarding) {
+          this.postOnboardingInitialization();
           this.triggerNetworkrequests();
         }
       }, this.onboardingController.store.getState()),
@@ -2072,6 +2066,7 @@ export default class MetamaskController extends EventEmitter {
     this.extension.runtime.onMessageExternal.addListener(onMessageReceived);
     // Fire a ping message to check if other extensions are running
     checkForMultipleVersionsRunning();
+    this.postOnboardingInitialization();
   }
 
   triggerNetworkrequests() {
@@ -2217,6 +2212,20 @@ export default class MetamaskController extends EventEmitter {
     const { currentLocale } = this.preferencesController.store.getState();
 
     return currentLocale;
+  }
+
+  postOnboardingInitialization() {
+    this.networkController.initializeProvider();
+    this.provider = this.networkController.getProviderAndBlockTracker().provider;
+    this.blockTracker = this.networkController.getProviderAndBlockTracker().blockTracker;
+
+    // TODO: Delete when ready to remove `networkVersion` from provider object
+    this.deprecatedNetworkId = null;
+    this.updateDeprecatedNetworkId();
+
+    // Initialize each of the controllers code that relies on network
+    // controllers and providers
+
   }
 
   /**
