@@ -14,15 +14,8 @@ export default class EnsController {
     };
 
     this._ens = ens;
-    if (!this._ens) {
-      const chainId = getCurrentChainId();
-      if (Ens.getChainEnsSupport(chainId)) {
-        this._ens = new Ens({
-          chainId,
-          provider,
-        });
-      }
-    }
+
+    this.getCurrentChainId = getCurrentChainId;
 
     this.store = new ObservableStore(initState);
 
@@ -32,7 +25,7 @@ export default class EnsController {
 
     onNetworkDidChange(() => {
       this.store.putState(initState);
-      const chainId = getCurrentChainId();
+      const chainId = this.getCurrentChainId();
       if (Ens.getChainEnsSupport(chainId)) {
         this._ens = new Ens({
           chainId,
@@ -42,6 +35,20 @@ export default class EnsController {
         delete this._ens;
       }
     });
+  }
+
+  delayedInit = () => {
+    if (!this._ens) {
+      const chainId = this.getCurrentChainId();
+      if (Ens.getChainEnsSupport(chainId)) {
+        this._ens = new Ens({
+          chainId,
+          provider,
+        });
+      }
+    }
+
+    console.log("delayed init")
   }
 
   reverseResolveAddress(address) {
