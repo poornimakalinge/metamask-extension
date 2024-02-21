@@ -2204,7 +2204,6 @@
         "__SENTRY_TRACING__": true,
         "clearInterval": true,
         "clearTimeout": true,
-        "console.log": true,
         "console.warn": true,
         "setInterval": true,
         "setTimeout": true
