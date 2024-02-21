@@ -4873,7 +4873,7 @@ __metadata:
 
 "@metamask/smart-transactions-controller@file:../smart-transactions-controller::locator=metamask-crx%40workspace%3A.":
   version: 6.2.2
-  resolution: "@metamask/smart-transactions-controller@file:../smart-transactions-controller#../smart-transactions-controller::hash=88f374&locator=metamask-crx%40workspace%3A."
+  resolution: "@metamask/smart-transactions-controller@file:../smart-transactions-controller#../smart-transactions-controller::hash=0e86ab&locator=metamask-crx%40workspace%3A."
   dependencies:
     "@ethersproject/bytes": "npm:^5.7.0"
     "@metamask/base-controller": "npm:^4.0.0"
@@ -4885,7 +4885,7 @@ __metadata:
     events: "npm:^3.3.0"
     fast-json-patch: "npm:^3.1.0"
     lodash: "npm:^4.17.21"
-  checksum: 734d0a1930f22cbf942e70ef2e59f2a8f9cf3e409c6aaa4d11304de3132a7bbc4019af4781679b411be4740b2d27db81dcfd722c88b908ae1543cae2445ad886
+  checksum: e0ea339f1fe7f4d0eb4d51d04ed23b34951811cfc0e240111c321dc08e99558012db83275417895cf1f78447222f9aa2fbe2bfdaa9416606ff1eb0e4cda38546
   languageName: node
   linkType: hard
 
@@ -5065,7 +5065,7 @@ __metadata:
 
 "@metamask/transaction-controller@file:../core/packages/transaction-controller::locator=metamask-crx%40workspace%3A.":
   version: 23.0.0
-  resolution: "@metamask/transaction-controller@file:../core/packages/transaction-controller#../core/packages/transaction-controller::hash=91bd6d&locator=metamask-crx%40workspace%3A."
+  resolution: "@metamask/transaction-controller@file:../core/packages/transaction-controller#../core/packages/transaction-controller::hash=d5ac75&locator=metamask-crx%40workspace%3A."
   dependencies:
     "@ethereumjs/common": "npm:^3.2.0"
     "@ethereumjs/tx": "npm:^4.2.0"
@@ -5091,7 +5091,7 @@ __metadata:
     "@metamask/approval-controller": ^5.1.2
     "@metamask/gas-fee-controller": ^13.0.0
     "@metamask/network-controller": ^17.2.0
-  checksum: c2a05cdac0f758f9480a727a3ce263e7ca547407747aa1f590675108f116bab42c00280b88ddee6e7de0b95bcbf454059dbe94d3661852e2eb8437948daaea9b
+  checksum: 089149800d66a781304053e9c90bf03ca6fda2b5aabb7d78476ac934a5371c4cf74c82f29e129f65752811e7d21e3bdaa1b97bcb65feb8d89e58a727abdc8f93
   languageName: node
   linkType: hard
 
