@@ -3112,6 +3112,12 @@ export default class MetamaskController extends EventEmitter {
         appStateController.updateNftDropDownState.bind(appStateController),
       setFirstTimeUsedNetwork:
         appStateController.setFirstTimeUsedNetwork.bind(appStateController),
+      setSwitchedNetworkDetails:
+        appStateController.setSwitchedNetworkDetails.bind(appStateController),
+      setSwitchedNetworkNeverShowMessage:
+        appStateController.setSwitchedNetworkNeverShowMessage.bind(
+          appStateController,
+        ),
 
       // EnsController
       tryReverseResolveAddress:
