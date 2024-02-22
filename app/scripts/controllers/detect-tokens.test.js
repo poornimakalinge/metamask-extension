@@ -7,6 +7,7 @@ import nock from 'nock';
 import BigNumber from 'bignumber.js';
 import { ControllerMessenger } from '@metamask/base-controller';
 import {
+  TokenDetectionController,
   TokenListController,
   TokensController,
   AssetsContractController,
@@ -17,14 +18,13 @@ import { NetworkController } from '@metamask/network-controller';
 import { AccountsController } from '@metamask/accounts-controller';
 import { NETWORK_TYPES } from '../../../shared/constants/network';
 import { toChecksumHexAddress } from '../../../shared/modules/hexstring-utils';
-import DetectTokensController from './detect-tokens';
 import PreferencesController from './preferences';
 
 const flushPromises = () => {
   return new Promise(jest.requireActual('timers').setImmediate);
 };
 
-describe('DetectTokensController', function () {
+describe('TokenDetectionController', function () {
   let sandbox,
     interval,
     assetsContractController,
@@ -35,15 +35,13 @@ describe('DetectTokensController', function () {
     tokenListController,
     accountsController,
     preferencesControllerMessenger,
-    getCurrentSelectedAccount,
-    getNetworkClientById,
     messenger;
 
   const noop = () => undefined;
 
   const getRestrictedMessenger = () => {
     return messenger.getRestricted({
-      name: 'DetectTokensController',
+      name: 'TokenDetectionController',
       allowedActions: ['KeyringController:getState'],
       allowedEvents: [
         'NetworkController:stateChange',
@@ -361,7 +359,7 @@ describe('DetectTokensController', function () {
   it('should poll on correct interval', async function () {
     const stub = sinon.stub(global, 'setInterval');
     // eslint-disable-next-line no-new
-    new DetectTokensController({
+    new TokenDetectionController({
       messenger: getRestrictedMessenger(),
       interval: 1337,
       getCurrentSelectedAccount:
@@ -374,7 +372,7 @@ describe('DetectTokensController', function () {
   it('should be called on every polling period', async function () {
     const clock = sandbox.useFakeTimers();
     await network.setProviderType(NETWORK_TYPES.MAINNET);
-    const controller = new DetectTokensController({
+    const controller = new TokenDetectionController({
       messenger: getRestrictedMessenger(),
       preferences,
       network,
@@ -412,7 +410,7 @@ describe('DetectTokensController', function () {
       messenger: tokenListMessengerSepolia,
     });
     await tokenListController.start();
-    const controller = new DetectTokensController({
+    const controller = new TokenDetectionController({
       messenger: getRestrictedMessenger(),
       preferences,
       network,
@@ -437,7 +435,7 @@ describe('DetectTokensController', function () {
   it('should skip adding tokens listed in ignoredTokens array', async function () {
     sandbox.useFakeTimers();
     await network.setProviderType(NETWORK_TYPES.MAINNET);
-    const controller = new DetectTokensController({
+    const controller = new TokenDetectionController({
       messenger: getRestrictedMessenger(),
       preferences,
       network,
@@ -491,7 +489,7 @@ describe('DetectTokensController', function () {
   it('should check and add tokens while on supported networks', async function () {
     sandbox.useFakeTimers();
     await network.setProviderType(NETWORK_TYPES.MAINNET);
-    const controller = new DetectTokensController({
+    const controller = new TokenDetectionController({
       messenger: getRestrictedMessenger(),
       preferences,
       network,
@@ -568,7 +566,7 @@ describe('DetectTokensController', function () {
 
   it('should trigger detect new tokens when change address', async function () {
     sandbox.useFakeTimers();
-    const controller = new DetectTokensController({
+    const controller = new TokenDetectionController({
       messenger: getRestrictedMessenger(),
       preferences,
       network,
@@ -591,7 +589,7 @@ describe('DetectTokensController', function () {
 
   it('should trigger detect new tokens when submit password', async function () {
     sandbox.useFakeTimers();
-    const controller = new DetectTokensController({
+    const controller = new TokenDetectionController({
       messenger: getRestrictedMessenger(),
       preferences,
       network,
@@ -613,7 +611,7 @@ describe('DetectTokensController', function () {
 
   it('should not be active after lock event is emitted', async function () {
     sandbox.useFakeTimers();
-    const controller = new DetectTokensController({
+    const controller = new TokenDetectionController({
       messenger: getRestrictedMessenger(),
       preferences,
       network,
@@ -634,7 +632,7 @@ describe('DetectTokensController', function () {
   it('should not trigger detect new tokens when not unlocked', async function () {
     const clock = sandbox.useFakeTimers();
     await network.setProviderType(NETWORK_TYPES.MAINNET);
-    const controller = new DetectTokensController({
+    const controller = new TokenDetectionController({
       messenger: getRestrictedMessenger(),
       preferences,
       network,
@@ -657,7 +655,7 @@ describe('DetectTokensController', function () {
   it('should not trigger detect new tokens when not open', async function () {
     const clock = sandbox.useFakeTimers();
     await network.setProviderType(NETWORK_TYPES.MAINNET);
-    const controller = new DetectTokensController({
+    const controller = new TokenDetectionController({
       messenger: getRestrictedMessenger(),
       preferences,
       network,
@@ -682,7 +680,7 @@ describe('DetectTokensController', function () {
 
   it('should poll on the correct interval by networkClientId', async function () {
     jest.useFakeTimers();
-    const controller = new DetectTokensController({
+    const controller = new TokenDetectionController({
       messenger: getRestrictedMessenger(),
       preferences,
       network,
@@ -721,7 +719,7 @@ describe('DetectTokensController', function () {
   });
 
   it('should restart token detection on selected account change', async () => {
-    const controller = new DetectTokensController({
+    const controller = new TokenDetectionController({
       messenger,
       interval,
       preferences,
@@ -749,7 +747,7 @@ describe('DetectTokensController', function () {
   });
 
   it('should restart token detection on useTokenDetection change', async () => {
-    const controller = new DetectTokensController({
+    const controller = new TokenDetectionController({
       messenger,
       interval,
       preferences,
@@ -771,7 +769,7 @@ describe('DetectTokensController', function () {
   });
 
   it('should restart token detection on network state change', async () => {
-    const controller = new DetectTokensController({
+    const controller = new TokenDetectionController({
       messenger,
       interval,
       preferences,
