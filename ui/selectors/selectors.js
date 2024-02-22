@@ -1103,6 +1103,10 @@ export function getShowWhatsNewPopup(state) {
   return state.appState.showWhatsNewPopup;
 }
 
+export function getCurrentPopupId(state) {
+  return state.appState.currentPopupId;
+}
+
 export const getMemoizedMetaMaskIdentities = createDeepEqualSelector(
   getMetaMaskIdentities,
   (identities) => identities,
