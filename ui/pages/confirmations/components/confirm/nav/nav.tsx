@@ -54,7 +54,7 @@ const Nav = () => {
     if (pendingConfirmations?.length <= 0 || !currentConfirmation) {
       return 0;
     }
-    return pendingConfirmations.findIndex(
+    return pendingConfirmations.sort((a1, a2) => a1.time - a2.time).findIndex(
       ({ id }) => id === currentConfirmation.id,
     );
   }, [currentConfirmation, pendingConfirmations]);
@@ -63,14 +63,13 @@ const Nav = () => {
     (pos: number) => {
       const nextConfirmation =
         pendingConfirmations[currentConfirmationPosition + pos];
+      console.log('----- next id ----', pendingConfirmations);
       // todo: once all signature request pages are ported to new designs
       // SIGNATURE_REQUEST_PATH from path below can be removed
       // In new routing all confirmations will support
       // "/confirm-transaction/<confirmation_id>"
       history.replace(
-        `${CONFIRM_TRANSACTION_ROUTE}/${
-          pendingConfirmations[currentConfirmationPosition + pos].id
-        }${
+        `${CONFIRM_TRANSACTION_ROUTE}/${nextConfirmation.id}${
           SignatureApprovalTypes.includes(nextConfirmation.type as ApprovalType)
             ? SIGNATURE_REQUEST_PATH
             : ''
