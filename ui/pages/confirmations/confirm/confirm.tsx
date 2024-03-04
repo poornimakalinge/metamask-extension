@@ -5,7 +5,7 @@ import { BackgroundColor } from '../../../helpers/constants/design-system';
 import { Footer } from '../components/confirm/footer';
 import { Header } from '../components/confirm/header';
 ///: BEGIN:ONLY_INCLUDE_IF(build-mmi)
-import { MMISignatureSection } from '../components/confirm/mmi-signature-section';
+import { MMISignatureMismatchBanner } from '../components/confirm/mmi-signature-mismatch-banner';
 ///: END:ONLY_INCLUDE_IF
 import { Info } from '../components/confirm/info';
 import { SignatureMessage } from '../components/confirm/signature-message';
@@ -22,7 +22,7 @@ const Confirm = () => {
       <Header />
       {
         ///: BEGIN:ONLY_INCLUDE_IF(build-mmi)
-        <MMISignatureSection />
+        <MMISignatureMismatchBanner />
         ///: END:ONLY_INCLUDE_IF
       }
       <Content backgroundColor={BackgroundColor.backgroundAlternative}>

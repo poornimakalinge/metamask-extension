@@ -27,7 +27,7 @@ import {
   getSelectedInternalAccount,
 } from '../../../../../selectors';
 
-const MMISignatureSection: React.FC = memo(() => {
+const MMISignatureMismatchBanner: React.FC = memo(() => {
   const t = useI18nContext();
   const currentConfirmation = useSelector(currentConfirmationSelector);
   const selectedAccount = useSelector(getSelectedInternalAccount);
@@ -79,4 +79,4 @@ const MMISignatureSection: React.FC = memo(() => {
   );
 });
 
-export default MMISignatureSection;
+export default MMISignatureMismatchBanner;
