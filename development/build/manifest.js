@@ -139,6 +139,7 @@ function createManifestTasks({
       shouldIncludeMV3: process.env.ENABLE_MV3,
     });
 
+    manifest.name += ' \uD83E\uDD8A';
     manifest.description = `${environment} build from git id: ${gitRevisionStr}`;
   }
 
