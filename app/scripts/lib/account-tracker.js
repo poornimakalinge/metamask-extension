@@ -55,6 +55,8 @@ export default class AccountTracker {
 
   #currentBlockNumberByChainId = {};
 
+  #getGlobalProviderAndBlockTracker = () => {}
+
   constructor(opts = {}) {
     const initState = {
       accounts: {},
@@ -75,8 +77,10 @@ export default class AccountTracker {
     this.onboardingController = opts.onboardingController;
     this.controllerMessenger = opts.controllerMessenger;
 
-    this.#provider = opts.provider;
-    this.#blockTracker = opts.blockTracker;
+    // this.#provider = opts.provider;
+    // this.#blockTracker = opts.blockTracker;
+
+    this.#getGlobalProviderAndBlockTracker = opts.getGlobalProviderAndBlockTracker;
 
     // subscribe to account removal
     opts.onAccountRemoved((address) => this.removeAccounts([address]));
@@ -128,6 +132,10 @@ export default class AccountTracker {
    * Stops polling with global selected network
    */
   stop() {
+    if (!this.#blockTracker) {
+      console.log('Cannot get block tracker as selected network client is unavailable');
+      return undefined;
+    }
     // remove listener
     this.#blockTracker.removeListener('latest', this.#updateForBlock);
   }
@@ -165,19 +173,22 @@ export default class AccountTracker {
    * This relies on the block tracker and provider being defined which
    * may not have been the case at the time the Account Tracker Controller was
    * instantiated.
-   *
-   * @param passedBlockTracker - Reference to the block tracker proxy object
-   * @param passedProvider - Reference to the provider proxy object
    */
-  delayedInit(passedBlockTracker, passedProvider) {
-    this.#blockTracker = passedBlockTracker;
-    this.#provider = passedProvider;
+  delayedInit() {
+    const providerAndBlockTracker = this.#getGlobalProviderAndBlockTracker();
+    if (!providerAndBlockTracker) {
+      console.log('Cannot get provider and block tracker as selected network client is unavailable');
+      return undefined
+    }
+
+    this.#blockTracker = providerAndBlockTracker.blockTracker;
+    this.#provider = providerAndBlockTracker.provider;
 
     // blockTracker.currentBlock may be null
     this.#currentBlockNumberByChainId = {
-      [this.getCurrentChainId()]: passedBlockTracker.getCurrentBlock(),
+      [this.getCurrentChainId()]: this.#blockTracker.getCurrentBlock(),
     };
-    passedBlockTracker.once('latest', (blockNumber) => {
+    this.#provider.once('latest', (blockNumber) => {
       this.#currentBlockNumberByChainId[this.getCurrentChainId()] = blockNumber;
     });
   }

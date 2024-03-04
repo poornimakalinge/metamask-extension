@@ -332,6 +332,7 @@ export default class MetamaskController extends EventEmitter {
     const version = this.platform.getVersion();
     this.recordFirstTimeInfo(initState);
     this.featureFlags = opts.featureFlags;
+    this.delayNetworkClient = true;
 
     // this keeps track of how many "controllerStream" connections are open
     // the only thing that uses controller connections are open metamask UI instances
@@ -1289,8 +1290,12 @@ export default class MetamaskController extends EventEmitter {
 
     // account tracker watches balances, nonces, and any code at their address
     this.accountTracker = new AccountTracker({
-      provider: this.provider,
-      blockTracker: this.blockTracker,
+      // provider: this.provider,
+      // blockTracker: this.blockTracker,
+      getGlobalProviderAndBlockTracker: () =>
+          this.delayNetworkClient
+            ? undefined
+            : this.networkController.getProviderAndBlockTracker(),
       getCurrentChainId: () =>
         this.networkController.state.providerConfig.chainId,
       getNetworkIdentifier: (providerConfig) => {
@@ -1328,6 +1333,7 @@ export default class MetamaskController extends EventEmitter {
         const { completedOnboarding: prevCompletedOnboarding } = prevState;
         const { completedOnboarding: currCompletedOnboarding } = currState;
         if (!prevCompletedOnboarding && currCompletedOnboarding) {
+          console.log({ prevCompletedOnboarding, currCompletedOnboarding });
           this.networkProviderInitialization();
           this.triggerNetworkrequests();
         }
@@ -1432,9 +1438,9 @@ export default class MetamaskController extends EventEmitter {
 
     this.txController = new TransactionController(
       {
-        blockTracker: this.blockTracker,
-        provider: this.provider,
-        cancelMultiplier: 1.1,
+        // blockTracker: this.blockTracker,
+        // provider: this.provider,
+        // cancelMultiplier: 1.1,
         getCurrentNetworkEIP1559Compatibility:
           this.networkController.getEIP1559Compatibility.bind(
             this.networkController,
@@ -1443,9 +1449,15 @@ export default class MetamaskController extends EventEmitter {
           this.getCurrentAccountEIP1559Compatibility.bind(this),
         getExternalPendingTransactions:
           this.getExternalPendingTransactions.bind(this),
+        getGlobalProviderAndBlockTracker: () =>
+          this.delayNetworkClient
+            ? undefined
+            : this.networkController.getProviderAndBlockTracker(),
         getGasFeeEstimates: this.gasFeeController.fetchGasFeeEstimates.bind(
           this.gasFeeController,
         ),
+        getNetworkState: () =>
+          this.delayNetworkClient ? undefined : this.networkController.state,
         getNetworkState: () => this.networkController.state,
         getPermittedAccounts: this.getPermittedAccounts.bind(this),
         getSavedGasFees: () =>
@@ -1689,8 +1701,12 @@ export default class MetamaskController extends EventEmitter {
           networkControllerMessenger,
           'NetworkController:stateChange',
         ),
+        getNonceLock: this.txController.getNonceLock.bind(
+          this.txController.nonceTracker,
+        ),
         confirmExternalTransaction:
           this.txController.confirmExternalTransaction.bind(this.txController),
+        provider: this.provider,
         trackMetaMetricsEvent: this.metaMetricsController.trackEvent.bind(
           this.metaMetricsController,
         ),
@@ -2072,7 +2088,12 @@ export default class MetamaskController extends EventEmitter {
     this.extension.runtime.onMessageExternal.addListener(onMessageReceived);
     // Fire a ping message to check if other extensions are running
     checkForMultipleVersionsRunning();
-    this.networkProviderInitialization();
+
+    // this.networkProviderInitialization();
+    if (this.onboardingController.store.getState().completedOnboarding) {
+      console.log('end of the constructor')
+      this.networkProviderInitialization();
+    }
   }
 
   triggerNetworkrequests() {
@@ -2226,7 +2247,14 @@ export default class MetamaskController extends EventEmitter {
    * it in.
    */
   networkProviderInitialization() {
+    console.log("networkProviderInitialization")
     this.networkController.initializeProvider();
+    console.log("finish initializeProvider")
+
+    console.log('before initApprovals')
+    this.delayNetworkClient = false;
+    this.txController.initApprovals();
+    console.log('after initApprovals')
 
     this.provider =
       this.networkController.getProviderAndBlockTracker().provider;
@@ -2238,13 +2266,10 @@ export default class MetamaskController extends EventEmitter {
     this.updateDeprecatedNetworkId();
 
     this.ensController.delayedInit(this.provider);
-    this.accountTracker.delayedInit(this.blockTracker, this.provider);
-    this.txController.initialization();
+    this.accountTracker.delayedInit();
+
+
     this.swapsController.delayedInit(this.provider);
-    this.smartTransactionsController.delayedInit(
-      this.provider,
-      this.txController.nonceTracker.getNonceLock,
-    );
     this.detectTokensController.restartTokenDetection();
   }
 
